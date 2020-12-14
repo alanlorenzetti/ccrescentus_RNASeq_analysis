@@ -8,7 +8,7 @@
 
 # loading libs ####
 # biocmanager is required for loading and installing packages
-if(!require("BiocManager")){install.packages("BiocManager"); library("BiocManager")}
+if(!requ ire("BiocManager")){install.packages("BiocManager"); library("BiocManager")}
 
 # pacman is a nice package manager; make it easier to load and install packages
 if(!require("pacman")){install.packages("pacman"); library("pacman")}
