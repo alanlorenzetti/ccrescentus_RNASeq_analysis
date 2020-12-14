@@ -1,0 +1,13 @@
+ccrescentus_RNASeq_analysis.Rproj
+/plot
+/data
+/reports
+addCommitPush.sh
+de_analysis.Rmd
+*.Rproj.user
+ccrescentus_RNASeq_analysis.Rproj
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
