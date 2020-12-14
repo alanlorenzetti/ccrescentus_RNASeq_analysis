@@ -12,9 +12,8 @@ threads=8
 
 # sourcing ####
 # loading libs
-source("loadingLibs.R")
+source("scripts/loadingLibs.R")
 
 # should we run quality control?
 reportFlag="yes"
-source("qualityControl.R")
-
+source("scripts/qualityControl.R")
