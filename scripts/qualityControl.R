@@ -16,3 +16,18 @@
   data.frame(hash, count, stringsAsFactors = FALSE)
 }
 assignInNamespace(".readFrequency", .readFrequency, "Rqc")
+
+# getting insights about raw data ####
+# getting filenames for each lib 
+files = list.files(path = "../raw", pattern = "*.fastq.gz", full.names = T)
+
+# getting info about paired-end reads
+pairs = rep(1:(length(files)/2),2)
+pairs = sort(pairs)
+
+# running QC
+qual1 = rqcQA(files, pair = pairs, workers=threads, n = 1000000, sample=T)
+
+# reporting
+if(!dir.exists("reports")){system("mkdir reports")}
+rqcReport(qual1, outdir = "reports", file = "raw-quality-Rqc")

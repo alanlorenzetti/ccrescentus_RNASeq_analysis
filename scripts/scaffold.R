@@ -10,10 +10,13 @@
 # setting up number of threads
 threads=8
 
+# should we run quality control?
+reportFlag="yes"
+
 # sourcing ####
 # loading libs
 source("scripts/loadingLibs.R")
 
-# should we run quality control?
-reportFlag="yes"
-source("scripts/qualityControl.R")
+if(reportFlag == "yes"){
+  source("scripts/qualityControl.R")
+}
