@@ -28,6 +28,31 @@ pairs = sort(pairs)
 # running QC
 qual1 = rqcQA(files, pair = pairs, workers=threads, n = 1000000, sample=T)
 
-# reporting
+# creating a directory to store reports
 if(!dir.exists("reports")){system("mkdir reports")}
+
+# reporting
 rqcReport(qual1, outdir = "reports", file = "raw-quality-Rqc")
+
+# getting insights about trimmed data ####
+# getting filenames for paired libs 
+files = list.files(path = "../trimmed", pattern = ".*-paired.*.fastq.gz", full.names = T)
+
+# getting info about paired-end reads
+pairs = rep(1:(length(files)/2),2)
+pairs = sort(pairs)
+
+# running QC
+qual2 = rqcQA(files, pair = pairs, workers=threads, n = 1000000, sample=T)
+
+# reporting
+rqcReport(qual2, outdir = "reports", file = "trimmed-quality-Rqc")
+
+# getting filenames for unpaired libs
+files = list.files(path = "../trimmed", pattern = "*-unpaired.*.fastq.gz", full.names = T)
+
+# running QC
+qual3 = rqcQA(files, workers=threads, n = 1000000, sample=T)
+
+# reporting
+rqcReport(qual3, outdir = "reports", file = "trimmed-unpaired-quality-Rqc")

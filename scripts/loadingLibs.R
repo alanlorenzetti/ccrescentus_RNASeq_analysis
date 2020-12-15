@@ -32,7 +32,11 @@ requiredPacks = c("tidyverse",
                   "gage",
                   "openxlsx",
                   "magrittr",
-                  "UniProt.ws")
+                  "UniProt.ws",
+                  "ggthemes")
 
 # loading required cran packages
 p_load(char=requiredPacks)
+
+# learning tableau colors
+tab10 = ggthemes_data$tableau$`color-palettes`$regular$`Tableau 10`
