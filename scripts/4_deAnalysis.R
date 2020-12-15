@@ -23,8 +23,8 @@ info = data.frame(replicate = reps, strain = strains, condition = conditions)
 rownames(info) = samples
 
 # providing the path for bam files
-filenamesPaired = paste0("../coverage_tmp/", rownames(info), "-paired", ".bam")
-filenamesUnpaired = paste0("../coverage_tmp/", rownames(info), "-unpaired", ".bam")
+filenamesPaired = paste0("../coverage_uniq/", rownames(info), "-paired", ".bam")
+filenamesUnpaired = paste0("../coverage_uniq/", rownames(info), "-unpaired", ".bam")
 
 # setting bam file list using Rsamtools
 bamfilesPaired = BamFileList(filenamesPaired)
