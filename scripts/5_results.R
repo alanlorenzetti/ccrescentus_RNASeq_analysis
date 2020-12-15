@@ -16,8 +16,8 @@ pheatmap(sampleDistMatrix,
 plotPCA(rld, intgroup = c("strain", "condition"))
 
 # heatmap of gene clustering (based on rlog distance)
-# the 100 genes with highest variance between samples
-topVarGenes = head(order(rowVars(assay(rldNonBlind)),decreasing=TRUE),100)
+# the 75 genes with highest variance between samples
+topVarGenes = head(order(rowVars(assay(rldNonBlind)),decreasing=TRUE),75)
 mat = assay(rldNonBlind)[ topVarGenes, ]
 mat = mat - rowMeans(mat)
 df = as.data.frame(colData(rldNonBlind)[,c("condition","strain")])
@@ -89,10 +89,17 @@ volcaPlot = function(allTable, sigTable){
 # defining function to report results
 generateResults = function(resdf, name){
   
-  # converting dds to tibble
+  # padj == 0 will be the mininum padj multiplied by 10E-2
+  # otherwise it cannot be displayed on the volcano plot
+  minpadj = resdf %>% as_tibble() %>% drop_na() %>% dplyr::select(padj) %>% filter(padj != 0) %>% min()
+  fixpadj = minpadj * 10E-2
+  
+  # converting dds to tibble and fixing padj == 0
   resdf = resdf %>% 
     as_tibble(rownames = "gffid|locus_tag|entrezid|geneName") %>% 
-    separate(col = `gffid|locus_tag|entrezid|geneName`, sep = "\\|", into = c("gffid", "locus_tag", "entrezid", "geneName"))
+    separate(col = `gffid|locus_tag|entrezid|geneName`, sep = "\\|", into = c("gffid", "locus_tag", "entrezid", "geneName")) %>% 
+    mutate(padj = case_when(padj == 0 ~ fixpadj,
+                            TRUE ~ as.double(padj)))
   
   # getting significant genes
   resdfsig = resdf %>% 
@@ -122,7 +129,8 @@ generateResults = function(resdf, name){
   
   # performing functional categorization for significant genes
   resdffuncat = functCat(resdfsig) %>% 
-    mutate_if(is.numeric, signif, digits = 4) #%>% 
+    mutate_if(is.numeric, signif, digits = 4) %>% 
+    dplyr::distinct()
 #    datatable(escape=F, rownames = FALSE, options = list(pageLength = 5))
   
   # creating and organizing list to store
@@ -139,7 +147,7 @@ generateResults = function(resdf, name){
   write.table(x = reslist[["all"]],
               file = paste0("results/", name, ".tsv"),
               col.names = T,
-              row.names = T,
+              row.names = F,
               quote = F,
               sep = "\t",
               dec = ",")
@@ -150,7 +158,7 @@ generateResults = function(resdf, name){
   write.table(x = reslist[["sig"]],
               file = paste0("results/", name, "_sig.tsv"),
               col.names = T,
-              row.names = T,
+              row.names = F,
               quote = F,
               sep = "\t",
               dec = ",")
@@ -162,7 +170,7 @@ generateResults = function(resdf, name){
   write.table(x = reslist[["funcat"]],
               file = paste0("results/", name, "_funCat.tsv"),
               col.names = T,
-              row.names = T,
+              row.names = F,
               quote = F,
               sep = "\t",
               dec = ",")

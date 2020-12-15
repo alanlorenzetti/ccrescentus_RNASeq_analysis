@@ -173,6 +173,8 @@ functCat = function(sigTable){
     replace_na("Undefined")
   funcat$COGproduct = funcat$COGproduct %>% 
     replace_na("Undefined")
+  funcat$product = funcat$product %>% 
+    replace_na("Undefined")
   
 #  funcat$UNIPROTKB = paste0("<a href='https://www.uniprot.org/uniprot/",funcat$UNIPROTKB,"'>", funcat$UNIPROTKB,"</a>")
   
@@ -191,7 +193,8 @@ funCat = genes %>%
   dplyr::rename(entrezID = "Dbxref") %>% 
   dplyr::mutate(across(.cols = everything(),
                        .fns = ~ case_when(is.na(.x) ~ "Undefined",
-                                          TRUE ~ as.character(.x))))
+                                          TRUE ~ as.character(.x)))) %>% 
+  dplyr::distinct()
 
 # saving tables to store funCat object
 write.table(x = funCat,
