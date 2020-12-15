@@ -26,17 +26,14 @@ log2fcthreshold = 2
 # creating data directory
 if(!dir.exists("data")){dir.create("data")}
 
+# creating results directory
+if(!dir.exists("results")){dir.create("results")}
+
 # sourcing ####
 # loading libs
 source("scripts/loadingLibs.R")
-
-if(reportFlag == "yes"){
-  source("scripts/qualityControl.R")
-}
-
+if(reportFlag == "yes"){source("scripts/qualityControl.R")}
 source("scripts/functionalCategorization.R")
-
 source("scripts/deAnalysis.R")
-
 source("scripts/results.R")
 

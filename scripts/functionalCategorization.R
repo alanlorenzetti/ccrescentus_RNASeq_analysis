@@ -1,8 +1,32 @@
 # alorenzetti 202012
 
 # description ####
-# this script will get and wrangle
-# functional data for genes
+# this script will get and wrangle annotation
+# and functional data for genes
+
+# setting up annotation ####
+# loading annotation file
+gffFile = file.path("../misc/Ccrescentus.gff")
+annot = rtracklayer::import(gffFile)
+
+# filtering genes
+genes = subset(annot, type == "gene")
+genes$Dbxref = genes$Dbxref[lapply(genes$Dbxref, grepl, pattern = "GeneID:")] %>%
+  sub(pattern = "GeneID:", replacement = "") %>%
+  as.numeric()
+
+# filtering CDS to obtain protein products
+CDS = subset(annot, type == "CDS")
+CDS$Dbxref = CDS$Dbxref[lapply(CDS$Dbxref, grepl, pattern = "GeneID:")] %>%
+  sub(pattern = "GeneID:", replacement = "") %>%
+  as.character()
+
+CDS = CDS[CDS$Dbxref %>% duplicated == FALSE,]
+CDS = as_tibble(CDS)
+CDS = CDS %>%
+  dplyr::select(Dbxref, product)
+
+names(genes) = paste(genes$ID, genes$locus_tag, genes$Dbxref, genes$Name, sep = "|")
 
 # getting kegg info ####
 if(file.exists("data/keggSetCcsDf.RData")){
@@ -150,7 +174,30 @@ functCat = function(sigTable){
   funcat$COGproduct = funcat$COGproduct %>% 
     replace_na("Undefined")
   
-  funcat$UNIPROTKB = paste0("<a href='https://www.uniprot.org/uniprot/",funcat$UNIPROTKB,"'>", funcat$UNIPROTKB,"</a>")
+#  funcat$UNIPROTKB = paste0("<a href='https://www.uniprot.org/uniprot/",funcat$UNIPROTKB,"'>", funcat$UNIPROTKB,"</a>")
   
   return(funcat)
 }
+
+# creating a functional category table for all genes
+funCat = genes %>%
+  as_tibble() %>%
+  dplyr::select(locus_tag, Name, Dbxref) %>%
+  dplyr::mutate(Dbxref = as.character(Dbxref)) %>% 
+  dplyr::left_join(CDS, by=c("Dbxref" = "Dbxref")) %>% 
+  dplyr::left_join(keggSetCcsDf, by=c("Dbxref" = "entrezid")) %>% 
+  dplyr::left_join(uniprotCcs, by=c("Dbxref" = "ENTREZ_GENE")) %>% 
+  dplyr::left_join(cogCcs, by="locus_tag") %>% 
+  dplyr::rename(entrezID = "Dbxref") %>% 
+  dplyr::mutate(across(.cols = everything(),
+                       .fns = ~ case_when(is.na(.x) ~ "Undefined",
+                                          TRUE ~ as.character(.x))))
+
+# saving tables to store funCat object
+write.table(x = funCat,
+            file = paste0("results/", "proteinFunctionalCategorization", ".tsv"),
+            col.names = T,
+            row.names = F,
+            quote = F,
+            sep = "\t",
+            dec = ",")

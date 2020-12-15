@@ -87,7 +87,7 @@ volcaPlot = function(allTable, sigTable){
 
 # reporting results ####
 # defining function to report results
-generateResults = function(resdf){
+generateResults = function(resdf, name){
   
   # converting dds to tibble
   resdf = resdf %>% 
@@ -100,39 +100,78 @@ generateResults = function(resdf){
   
   # getting upregulated ones
   resdfup = resdf %>% 
-    dplyr::filter(log2FoldChange >= log2fcthreshold) %>% 
+    dplyr::filter(log2FoldChange >= log2fcthreshold & padj < padjthreshold) %>% 
     dplyr::arrange(desc(log2FoldChange)) %>%
-    mutate_if(is.numeric, signif, digits = 4) %>% 
-    datatable(rownames = FALSE, options = list(pageLength = 5))
+    mutate_if(is.numeric, signif, digits = 4) #%>% 
+#    datatable(rownames = FALSE, options = list(pageLength = 5))
   
   # getting downregulated ones
   resdfdown = resdf %>%
-    dplyr::filter(log2FoldChange <= -log2fcthreshold) %>% 
+    dplyr::filter(log2FoldChange <= -log2fcthreshold & padj < padjthreshold) %>% 
     dplyr::arrange(log2FoldChange) %>%
-    mutate_if(is.numeric, signif, digits = 4) %>% 
-    datatable(rownames = FALSE, options = list(pageLength = 5))
+    mutate_if(is.numeric, signif, digits = 4) #%>% 
+#    datatable(rownames = FALSE, options = list(pageLength = 5))
   
   # getting a tibble containing all genes
   resdfall = resdf %>% 
-    mutate_if(is.numeric, signif, digits = 4) %>% 
-    datatable(rownames = FALSE, options = list(pageLength = 5))
+    mutate_if(is.numeric, signif, digits = 4) #%>% 
+#    datatable(rownames = FALSE, options = list(pageLength = 5))
   
   # generating interactive volcano plots
   resdfvolcano = volcaPlot(resdf, resdfsig)
   
   # performing functional categorization for significant genes
   resdffuncat = functCat(resdfsig) %>% 
-    mutate_if(is.numeric, signif, digits = 4) %>% 
-    datatable(escape=F, rownames = FALSE, options = list(pageLength = 5))
+    mutate_if(is.numeric, signif, digits = 4) #%>% 
+#    datatable(escape=F, rownames = FALSE, options = list(pageLength = 5))
   
   # creating and organizing list to store
   # previous objects
   reslist = list()
+  reslist[["sig"]] = resdfsig
   reslist[["upregulated"]] = resdfup
   reslist[["downregulated"]] = resdfdown
   reslist[["all"]] = resdfall
   reslist[["funcat"]] = resdffuncat
   reslist[["volcano"]] = resdfvolcano
+  
+  # writing a table containing all genes
+  write.table(x = reslist[["all"]],
+              file = paste0("results/", name, ".tsv"),
+              col.names = T,
+              row.names = T,
+              quote = F,
+              sep = "\t",
+              dec = ",")
+  write.xlsx(reslist[["all"]],
+                       paste0("results/", name, ".xlsx"))
+  
+  # writing a table containing only significant genes
+  write.table(x = reslist[["sig"]],
+              file = paste0("results/", name, "_sig.tsv"),
+              col.names = T,
+              row.names = T,
+              quote = F,
+              sep = "\t",
+              dec = ",")
+  write.xlsx(reslist[["sig"]],
+             paste0("results/", name, "_sig.xlsx"))
+  
+  # writing a table containing significant genes
+  # with functional categorization
+  write.table(x = reslist[["funcat"]],
+              file = paste0("results/", name, "_funCat.tsv"),
+              col.names = T,
+              row.names = T,
+              quote = F,
+              sep = "\t",
+              dec = ",")
+  write.xlsx(reslist[["funcat"]],
+             paste0("results/", name, "_funCat.xlsx"))
+  
+  # saving interactive volcano plot
+  htmlwidgets::saveWidget(widget = reslist[["volcano"]],
+                          file = paste0("results/", name, "_volcanoPlot.html"))
   
   return(reslist)
 }
@@ -147,45 +186,25 @@ contrasts = c(
 # getting objects
 finRes = list()
 for(i in contrasts){
-  finRes[[i]] = generateResults(results[[i]])
-}
-
-# writing tables ####
-contrasts = c(
-  "RhlB30C_vs_NA100030C",
-  "RhlB10C_vs_NA100010C",
-  "NA100010C_vs_NA100030C"
-)
-
-for(i in contrasts){
-  allGenes = i
-  sigGenes = paste0(i, "Sig")
-  funcatGenes = paste0(i, "Sig_funcat")
-  
-  write.table(as_tibble(get0(allGenes)), paste0("data/", allGenes, ".tsv"), col.names = T, row.names = T, quote = F, sep = "\t", dec = ",")
-  write.xlsx(as_tibble(get0(allGenes)), paste0("data/", allGenes, ".xlsx"))
-  
-  write.table(as_tibble(get0(sigGenes)), paste0("data/", sigGenes, ".tsv"), col.names = T, row.names = T, quote = F, sep = "\t", dec = ",")
-  write.xlsx(as_tibble(get0(sigGenes)), paste0("data/", sigGenes, ".xlsx"))
-  
-  write.table(as_tibble(get0(funcatGenes) %>%
-                          mutate(UNIPROTKB = sub(UNIPROTKB, pattern="^.*/(.*)'>.*$", replacement = "\\1"))), paste0("data/", funcatGenes, ".tsv"), col.names = T, row.names = T, quote = F, sep = "\t", dec = ",")
-  write.xlsx(as_tibble(get0(funcatGenes) %>%
-                         mutate(UNIPROTKB = sub(UNIPROTKB, pattern="^.*/(.*)'>.*$", replacement = "\\1"))), paste0("data/", funcatGenes, ".xlsx"))
+  finRes[[i]] = generateResults(results[[i]], i)
 }
 
 # writing whole count matrix ####
-write.table(as_tibble(assay(se), rownames = "gffid|locus_tag|entrezid|geneName"), paste0("data/", "countMatrix", ".tsv"), col.names = T, row.names = T, quote = F, sep = "\t", dec = ",")
-write.xlsx(as_tibble(assay(se), rownames = "gffid|locus_tag|entrezid|geneName"), paste0("data/", "countMatrix", ".xlsx"))
+write.table(as_tibble(assay(se), rownames = "gffid|locus_tag|entrezid|geneName"),
+            paste0("results/", "countMatrix", ".tsv"),
+            col.names = T,
+            row.names = T,
+            quote = F,
+            sep = "\t",
+            dec = ",")
+write.xlsx(as_tibble(assay(se), rownames = "gffid|locus_tag|entrezid|geneName"),
+           paste0("results/", "countMatrix", ".xlsx"))
 
-# summary
-sigtables = paste0(contrasts, "Sig")
-
+# summary ####
 summaryTable=NULL
-
-for(i in sigtables){
-  up = dim(subset(get0(i), log2FoldChange > 0))[1]
-  down = dim(subset(get0(i), log2FoldChange < 0))[1]
+for(i in names(finRes)){
+  up = dim(finRes[[i]]$upregulated)[1]
+  down = dim(finRes[[i]]$downregulated)[1]
   summaryTable=rbind(summaryTable, c(i,up,down))
 }
 

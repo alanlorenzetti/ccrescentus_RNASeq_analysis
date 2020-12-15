@@ -30,29 +30,6 @@ filenamesUnpaired = paste0("../coverage_tmp/", rownames(info), "-unpaired", ".ba
 bamfilesPaired = BamFileList(filenamesPaired)
 bamfilesUnpaired = BamFileList(filenamesUnpaired)
 
-# setting up annotation ####
-# loading annotation file
-gffFile = file.path("../misc/Ccrescentus.gff")
-annot = rtracklayer::import(gffFile)
-
-# filtering genes
-genes = subset(annot, type == "gene")
-genes$Dbxref = genes$Dbxref[lapply(genes$Dbxref, grepl, pattern = "GeneID:")] %>%
-  sub(pattern = "GeneID:", replacement = "") %>%
-  as.numeric()
-
-# filtering CDS to obtain protein products
-CDS = subset(annot, type == "CDS")
-CDS$Dbxref = CDS$Dbxref[lapply(CDS$Dbxref, grepl, pattern = "GeneID:")] %>%
-  sub(pattern = "GeneID:", replacement = "") %>%
-  as.character()
-
-CDS = CDS[CDS$Dbxref %>% duplicated == FALSE,]
-CDS = as_tibble(CDS)
-CDS = CDS %>%
-  dplyr::select(Dbxref, product)
-
-names(genes) = paste(genes$ID, genes$locus_tag, genes$Dbxref, genes$Name, sep = "|")
 
 # creating count tables (SummarizedExperiment) ####
 if(file.exists("data/sePaired.RData")){
@@ -105,7 +82,7 @@ sampleDists = dist(t(assay(rld)))
 sampleDistMatrix = as.matrix(sampleDists)
 rownames(sampleDistMatrix) = paste( rld$strain, rld$condition, sep="_" )
 colnames(sampleDistMatrix) = NULL
-colors = colorRampPalette( rev(brewer.pal(9, "Reds")) )(255)
+colors = colorRampPalette(rev(brewer.pal(9, "Reds")) )(255)
 
 # result tables for contrasts
 results = list()
