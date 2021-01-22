@@ -3,6 +3,7 @@ ccrescentus_RNASeq_analysis.Rproj
 /data
 /reports
 /results
+/results_lfc1
 addCommitPush.sh
 de_analysis.Rmd
 *.Rproj.user

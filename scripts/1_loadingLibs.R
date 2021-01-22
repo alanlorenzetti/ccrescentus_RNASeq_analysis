@@ -40,3 +40,6 @@ p_load(char=requiredPacks)
 
 # learning tableau colors
 tab10 = ggthemes_data$tableau$`color-palettes`$regular$`Tableau 10`
+
+# registering multiple processors
+register(MulticoreParam(workers = threads))

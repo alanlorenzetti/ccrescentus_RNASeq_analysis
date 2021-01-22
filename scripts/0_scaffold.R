@@ -10,9 +10,6 @@
 # setting up number of threads
 threads=10
 
-# registering multiple processors
-register(MulticoreParam(workers = threads))
-
 # should we run quality control?
 reportFlag="no"
 
