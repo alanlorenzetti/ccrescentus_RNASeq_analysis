@@ -18,7 +18,7 @@ reportFlag="no"
 padjthreshold = 0.01
 
 # DeSeq2 log2FoldChange
-log2fcthreshold = 2
+log2fcthreshold = 1
 
 # creating data directory
 if(!dir.exists("data")){dir.create("data")}
