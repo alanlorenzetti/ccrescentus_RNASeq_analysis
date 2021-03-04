@@ -15,6 +15,8 @@ if(!require("pacman")){install.packages("pacman"); library("pacman")}
 
 # list of required packages
 requiredPacks = c("tidyverse",
+                  "ggpubr",
+                  "ggthemes",
                   "pheatmap",
                   "RColorBrewer",
                   "genefilter",
@@ -33,7 +35,8 @@ requiredPacks = c("tidyverse",
                   "openxlsx",
                   "magrittr",
                   "UniProt.ws",
-                  "ggthemes")
+                  "ggthemes",
+                  "readtext")
 
 # loading required cran packages
 p_load(char=requiredPacks)
@@ -43,3 +46,6 @@ tab10 = ggthemes_data$tableau$`color-palettes`$regular$`Tableau 10`
 
 # registering multiple processors
 register(MulticoreParam(workers = threads))
+
+# setting ggtheme
+theme_set(theme_bw())

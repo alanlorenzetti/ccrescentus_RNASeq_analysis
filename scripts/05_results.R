@@ -218,3 +218,58 @@ for(i in names(finRes)){
 
 summaryTable=as.data.frame(summaryTable)
 colnames(summaryTable) = c("sigTable", "up", "down")
+
+# getting number of aligned reads summary ####
+reads = list()
+
+# reading files
+# it is gonna throw warnings since
+# the program doesnt know .log
+# but it is fine
+reads[["trimmomatic"]] = readtext(file = "../trimmed/NA*.log")
+  
+reads[["trimmomatic"]] = reads[["trimmomatic"]] %>% 
+  as_tibble() %>% 
+  dplyr::mutate(doc_id = str_replace(doc_id, ".log$", ""),
+         text = str_extract(text, "Input Read Pairs: [0-9]+"),
+         text = str_replace(text, ".*: ", ""),
+         text = as.numeric(text)) %>% 
+  dplyr::rename(sample = "doc_id",
+                raw_count = "text")
+
+# reading feature counts
+reads[["features"]] = assay(se) %>%
+  as_tibble(rownames = "locus_tag") %>% 
+  dplyr::select(c(locus_tag, starts_with("NA"))) %>% 
+  summarise(across(.cols = starts_with("NA"),
+                   .fns = ~ sum(.x))) %>% 
+  t() %>% 
+  as_tibble(rownames = "sample") %>% 
+  dplyr::rename(feature_count = "V1")
+
+# reading cds counts
+reads[["cds"]] = assay(se) %>%
+  as_tibble(rownames = "locus_tag") %>% 
+  filter(str_detect(string = locus_tag, pattern = "CCNA_[0-9]+")) %>% 
+  dplyr::select(c(locus_tag, starts_with("NA"))) %>% 
+  summarise(across(.cols = starts_with("NA"),
+                   .fns = ~ sum(.x))) %>% 
+  t() %>% 
+  as_tibble(rownames = "sample") %>% 
+  dplyr::rename(cds_count = "V1")
+
+# combining dfs and getting new insights
+reads[["final"]] = left_join(x = reads[["trimmomatic"]],
+                             y = reads[["features"]],
+                             by = "sample") %>% 
+  left_join(x = .,
+            y = reads[["cds"]],
+            by = "sample") %>% 
+  mutate(feature_pct = feature_count/raw_count,
+         cds_pct = cds_count/raw_count)
+
+reads[["final"]] = reads[["final"]][c(2,4,6,1,3,5),]
+
+# writing reads table
+write.xlsx(x = reads[["final"]],
+           file = "results_lfc1/reads.xlsx")
