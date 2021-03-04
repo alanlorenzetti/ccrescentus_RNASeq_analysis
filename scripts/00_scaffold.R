@@ -34,8 +34,9 @@ if(!dir.exists("plots")){dir.create("plots")}
 
 # sourcing ####
 # loading libs
-source("scripts/1_loadingLibs.R")
-if(reportFlag == "yes"){source("scripts/2_qualityControl.R")}
-source("scripts/3_functionalCategorization.R")
-source("scripts/4_deAnalysis.R")
-source("scripts/5_results.R")
+source("scripts/01_loadingLibs.R")
+if(reportFlag == "yes"){source("scripts/02_qualityControl.R")}
+source("scripts/03_functionalCategorization.R")
+source("scripts/04_deAnalysis.R")
+source("scripts/05_results.R")
+source("scripts/06_enrichmentAnalysisAndFigs.R")
