@@ -128,7 +128,10 @@ enrichdf[["NA100010C_vs_NA100030C"]][["plot"]] = enrichdf[["NA100010C_vs_NA10003
   scale_x_continuous(name = "Count",
                      limits = c(-100, 100),
                      labels = abs) +
-  theme(legend.position = "bottom")
+  theme(text = element_text(colour = "black"),
+        axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour = "black"),
+        legend.position = "bottom")
 
 # saving
 ggsave(plot = enrichdf[["NA100010C_vs_NA100030C"]][["plot"]],
@@ -136,4 +139,11 @@ ggsave(plot = enrichdf[["NA100010C_vs_NA100030C"]][["plot"]],
        width = 7,
        height = 4,
        unit = "in",
-       dpi = 300)
+       dpi = 600)
+
+ggsave(plot = enrichdf[["NA100010C_vs_NA100030C"]][["plot"]],
+       filename = "plots/enrichmentOfCategories.pdf",
+       width = 7,
+       height = 4,
+       unit = "in",
+       dpi = 600)
