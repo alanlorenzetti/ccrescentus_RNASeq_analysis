@@ -21,13 +21,13 @@ padjthreshold = 0.01
 log2fcthreshold = 1
 
 # hypergeometric p threshold
-qthr = 0.1
+qthr = 0.05
 
 # creating data directory
 if(!dir.exists("data")){dir.create("data")}
 
 # creating results directory
-if(!dir.exists("results")){dir.create("results")}
+if(!dir.exists("results_lfc1")){dir.create("results_lfc1")}
 
 # creating plots directory
 if(!dir.exists("plots")){dir.create("plots")}

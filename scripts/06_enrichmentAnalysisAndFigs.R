@@ -98,7 +98,7 @@ for(j in inputobj$status %>% unique()){
 
 # correcting pvalues using BH method
 # filtering by pval
-enrich$qval = p.adjust(enrich$pval)
+enrich$qval = p.adjust(enrich$pval, method = "BH")
 enrich = enrich[enrich$qval < qthr,]
 
 # adjusting dataset to include enrichment analysis
@@ -107,9 +107,9 @@ enrichdf[["NA100010C_vs_NA100030C"]][["allfig"]] = enrichdf[["NA100010C_vs_NA100
   left_join(x = .,
             y = enrich,
             by = c("COG" = "level", "status" = "regRule")) %>%
-  dplyr::mutate(enrichStatus = case_when(qval < 0.01 ~ "***",
-                                  qval < 0.05 & qval >= 0.01 ~ "**",
-                                  qval < 0.1 & qval >= 0.05 ~ "*",
+  dplyr::mutate(enrichStatus = case_when(qval < 0.001 ~ "***",
+                                  qval < 0.01 & qval >= 0.001 ~ "**",
+                                  qval < 0.05 & qval >= 0.01 ~ "*",
                                   TRUE ~ NA_character_),
          COG = factor(COG, COG %>% unique() %>% rev()))
 
