@@ -1,5 +1,7 @@
-# Caulobacter crescentus NA1000 Cold Shock RNA-Seq Analysis
+# Transcriptomic analysis of cold stress in Caulobacter crescentus
 
-This collection of scripts will perform the differential expression analysis of a Cold Shock experiment.  
+We evaluated the effect of temperature in Caulobacter crescentus NA1000 using differential expression approaches between two different conditions, 30°C and 10°C.  
 
-The repository is part of the study conducted by Hugo Libonati de Araújo and Dr. Marilis do Valle Marques.
+This collection of scripts will perform the differential expression analysis and generate results.  
+
+The repository is part of the study conducted by Hugo Libonati de Araújo and Dr. Marilis do Valle Marques.  
