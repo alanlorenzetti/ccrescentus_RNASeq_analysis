@@ -110,19 +110,19 @@ generateResults = function(resdf, name){
     dplyr::filter(log2FoldChange >= log2fcthreshold & padj < padjthreshold) %>% 
     dplyr::arrange(desc(log2FoldChange)) %>%
     mutate_if(is.numeric, signif, digits = 4) #%>% 
-#    datatable(rownames = FALSE, options = list(pageLength = 5))
+  #    datatable(rownames = FALSE, options = list(pageLength = 5))
   
   # getting downregulated ones
   resdfdown = resdf %>%
     dplyr::filter(log2FoldChange <= -log2fcthreshold & padj < padjthreshold) %>% 
     dplyr::arrange(log2FoldChange) %>%
     mutate_if(is.numeric, signif, digits = 4) #%>% 
-#    datatable(rownames = FALSE, options = list(pageLength = 5))
+  #    datatable(rownames = FALSE, options = list(pageLength = 5))
   
   # getting a tibble containing all genes
   resdfall = resdf %>% 
     mutate_if(is.numeric, signif, digits = 4) #%>% 
-#    datatable(rownames = FALSE, options = list(pageLength = 5))
+  #    datatable(rownames = FALSE, options = list(pageLength = 5))
   
   # generating interactive volcano plots
   resdfvolcano = volcaPlot(resdf, resdfsig)
@@ -131,7 +131,7 @@ generateResults = function(resdf, name){
   resdffuncat = functCat(resdfsig) %>% 
     mutate_if(is.numeric, signif, digits = 4) %>% 
     dplyr::distinct()
-#    datatable(escape=F, rownames = FALSE, options = list(pageLength = 5))
+  #    datatable(escape=F, rownames = FALSE, options = list(pageLength = 5))
   
   # creating and organizing list to store
   # previous objects
@@ -144,42 +144,24 @@ generateResults = function(resdf, name){
   reslist[["volcano"]] = resdfvolcano
   
   # writing a table containing all genes
-  write.table(x = reslist[["all"]],
-              file = paste0("results/", name, ".tsv"),
-              col.names = T,
-              row.names = F,
-              quote = F,
-              sep = "\t",
-              dec = ",")
-  write.xlsx(reslist[["all"]],
-                       paste0("results/", name, ".xlsx"))
+  write_tsv(x = reslist[["all"]],
+            file = paste0("results_lfc1/", name, ".tsv"),
+            col_names = T)
   
   # writing a table containing only significant genes
-  write.table(x = reslist[["sig"]],
-              file = paste0("results/", name, "_sig.tsv"),
-              col.names = T,
-              row.names = F,
-              quote = F,
-              sep = "\t",
-              dec = ",")
-  write.xlsx(reslist[["sig"]],
-             paste0("results/", name, "_sig.xlsx"))
+  write_tsv(x = reslist[["sig"]],
+            file = paste0("results_lfc1/", name, "_sig.tsv"),
+            col_names = T)
   
   # writing a table containing significant genes
   # with functional categorization
-  write.table(x = reslist[["funcat"]],
-              file = paste0("results/", name, "_funCat.tsv"),
-              col.names = T,
-              row.names = F,
-              quote = F,
-              sep = "\t",
-              dec = ",")
-  write.xlsx(reslist[["funcat"]],
-             paste0("results/", name, "_funCat.xlsx"))
+  write_tsv(x = reslist[["funcat"]],
+            file = paste0("results_lfc1/", name, "_funCat.tsv"),
+            col_names = T)
   
   # saving interactive volcano plot
   htmlwidgets::saveWidget(widget = reslist[["volcano"]],
-                          file = paste0("results/", name, "_volcanoPlot.html"))
+                          file = paste0("results_lfc1/", name, "_volcanoPlot.html"))
   
   return(reslist)
 }
@@ -198,15 +180,9 @@ for(i in contrasts){
 }
 
 # writing whole count matrix ####
-write.table(as_tibble(assay(se), rownames = "gffid|locus_tag|entrezid|geneName"),
-            paste0("results/", "countMatrix", ".tsv"),
-            col.names = T,
-            row.names = T,
-            quote = F,
-            sep = "\t",
-            dec = ",")
-write.xlsx(as_tibble(assay(se), rownames = "gffid|locus_tag|entrezid|geneName"),
-           paste0("results/", "countMatrix", ".xlsx"))
+write_tsv(as_tibble(assay(se), rownames = "gffid|locus_tag|entrezid|geneName"),
+          paste0("results_lfc1/", "countMatrix", ".tsv"),
+          col_names = T)
 
 # summary ####
 summaryTable=NULL
@@ -227,13 +203,13 @@ reads = list()
 # the program doesnt know .log
 # but it is fine
 reads[["trimmomatic"]] = readtext(file = "../trimmed/NA*.log")
-  
+
 reads[["trimmomatic"]] = reads[["trimmomatic"]] %>% 
   as_tibble() %>% 
   dplyr::mutate(doc_id = str_replace(doc_id, ".log$", ""),
-         text = str_extract(text, "Input Read Pairs: [0-9]+"),
-         text = str_replace(text, ".*: ", ""),
-         text = as.numeric(text)) %>% 
+                text = str_extract(text, "Input Read Pairs: [0-9]+"),
+                text = str_replace(text, ".*: ", ""),
+                text = as.numeric(text)) %>% 
   dplyr::rename(sample = "doc_id",
                 raw_count = "text")
 
@@ -271,5 +247,6 @@ reads[["final"]] = left_join(x = reads[["trimmomatic"]],
 reads[["final"]] = reads[["final"]][c(2,4,6,1,3,5),]
 
 # writing reads table
-write.xlsx(x = reads[["final"]],
-           file = "results_lfc1/reads.xlsx")
+write_tsv(x = reads[["final"]],
+          file = "results_lfc1/reads.tsv",
+          col_names = T)
