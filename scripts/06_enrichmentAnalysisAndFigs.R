@@ -171,7 +171,7 @@ volcanoplot10C_vs_30C = finRes$NA100010C_vs_NA100030C$all %>%
   scale_x_continuous(limits = c(-12,12),
                      breaks = seq(-12, 12, 2)) +
   xlab("Log<sub>2</sub>(FC)") +
-  ylab("-Log<sub>10</sub>(Adjusted *p*-value") +
+  ylab("-Log<sub>10</sub>(Adjusted *p*-value)") +
   theme(axis.title.x = element_markdown(),
         axis.title.y = element_markdown(),
         text = element_text(colour = "black"),
