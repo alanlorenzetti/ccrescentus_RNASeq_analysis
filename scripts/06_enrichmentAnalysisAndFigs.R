@@ -147,3 +147,40 @@ ggsave(plot = enrichdf[["NA100010C_vs_NA100030C"]][["plot"]],
        height = 4,
        unit = "in",
        dpi = 600)
+
+# volcano plot figure ####
+theme_set(theme_bw())
+volcanoplot10C_vs_30C = finRes$NA100010C_vs_NA100030C$all %>% 
+  mutate(status = case_when(log2FoldChange <= -log2fcthreshold &
+                              padj < padjthreshold ~ "Downregulated",
+                            log2FoldChange >= log2fcthreshold &
+                              padj < padjthreshold ~ "Upregulated",
+                            TRUE ~ "nonDE")) %>% 
+  ggplot(aes(x = log2FoldChange, y = -log10(padj), color = status)) +
+  geom_point(alpha = 0.75,
+             show.legend = F) +
+  geom_hline(yintercept = -log10(padjthreshold),
+             size = 0.25,
+             linetype = "dashed") +
+  geom_vline(xintercept = c(-log2fcthreshold,log2fcthreshold),
+             size = 0.25,
+             linetype = "dashed") +
+  scale_color_manual(values = c("Downregulated" = "#4E79A7",
+                                "Upregulated" = "#E15759",
+                                "nonDE" = "#79706E")) +
+  scale_x_continuous(limits = c(-12,12),
+                     breaks = seq(-12, 12, 2)) +
+  xlab("Log<sub>2</sub>(FC)") +
+  ylab("-Log<sub>10</sub>(Adjusted *p*-value") +
+  theme(axis.title.x = element_markdown(),
+        axis.title.y = element_markdown(),
+        text = element_text(colour = "black"),
+        axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour = "black"))
+
+ggsave(filename = "plots/volcanoplot10C_vs_30C.png",
+       dpi = 600,
+       plot = volcanoplot10C_vs_30C,
+       units = "in",
+       width = 8,
+       height = 5)

@@ -15,6 +15,7 @@ if(!require("pacman")){install.packages("pacman"); library("pacman")}
 
 # list of required packages
 requiredPacks = c("tidyverse",
+                  "ggtext",
                   "ggpubr",
                   "ggthemes",
                   "pheatmap",
