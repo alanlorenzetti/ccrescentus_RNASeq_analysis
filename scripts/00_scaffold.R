@@ -40,3 +40,5 @@ source("scripts/03_functionalCategorization.R")
 source("scripts/04_deAnalysis.R")
 source("scripts/05_results.R")
 source("scripts/06_enrichmentAnalysisAndFigs.R")
+# manually run
+# scripts/07_hypergeometric_sig.Rmd
