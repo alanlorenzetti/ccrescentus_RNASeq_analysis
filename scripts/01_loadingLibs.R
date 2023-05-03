@@ -36,7 +36,8 @@ requiredPacks = c("tidyverse",
                   "magrittr",
                   "UniProt.ws",
                   "ggthemes",
-                  "readtext")
+                  "readtext",
+                  "openxlsx")
 
 # loading required cran packages
 p_load(char=requiredPacks)

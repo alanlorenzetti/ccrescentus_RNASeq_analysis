@@ -179,6 +179,24 @@ for(i in contrasts){
   finRes[[i]] = generateResults(results[[i]], i)
 }
 
+# writing excel file for two of three contrasts
+write.xlsx(x = list(Summary = NULL,
+                    RhlB30C_vs_NA100030C = finRes$RhlB30C_vs_NA100030C$funcat %>%
+                      dplyr::select(-c(KEGGpathway,
+                                       UNIPROTKB,
+                                       GO,
+                                       COGproduct,
+                                       COGcode,
+                                       COG_id)),
+                    RhlB10C_vs_NA100010C = finRes$RhlB10C_vs_NA100010C$funcat %>%
+                      dplyr::select(-c(KEGGpathway,
+                                       UNIPROTKB,
+                                       GO,
+                                       COGproduct,
+                                       COGcode,
+                                       COG_id))),
+           file = "results_lfc1/Table_S3.xlsx")
+
 # writing whole count matrix ####
 write_tsv(as_tibble(assay(se), rownames = "gffid|locus_tag|entrezid|geneName"),
           paste0("results_lfc1/", "countMatrix", ".tsv"),
