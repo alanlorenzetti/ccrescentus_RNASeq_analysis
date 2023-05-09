@@ -66,7 +66,7 @@ overlap/median(null)
 
 ```{r}
 # the probability (p-value) of obtaining a value
-# as extreme or more extreme than the overlap (73)
+# as extreme or more extreme than the overlap (74)
 # given a null distribution (obtained at random)
 # with the same parameters is
 p = phyper(q = overlap-1, m = setA, n = total-setA, k = setB, lower.tail = F)
@@ -76,7 +76,7 @@ p
 ```
 
 ```{r}
-# the observed overlap was 73
+# the observed overlap was 74
 # whereas the median of our null distribution obtained
 # at random was around 26
 plot = tibble(null = null) %>% 
