@@ -1,6 +1,6 @@
-# Transcriptomic analysis of cold stress in Caulobacter crescentus
+# Transcriptomic analysis of cold stress in *Caulobacter crescentus*
 
-We evaluated the effect of temperature in Caulobacter crescentus NA1000 using 
+We evaluated the effect of temperature in *Caulobacter crescentus* NA1000 using 
 differential expression approaches between two different conditions, 30°C and 
 10°C. We also evaluated the impact of knocking out RhlB in the same 
 conditions.  
