@@ -29,7 +29,7 @@ setB = 478
 
 # the genes showing up in the two sets
 # is the overlap
-overlap = 73
+overlap = 74
 
 # the total number of genes in C. crescentus 
 # according to the NA1000 genome build at the NCBI
